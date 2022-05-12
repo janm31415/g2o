@@ -61,6 +61,7 @@ if(APPLE)
 endif(APPLE)
 
 # Set the output directory for the build executables and libraries
+if (NOT g2o_RUNTIME_OUTPUT_DIRECTORY)
 set(g2o_RUNTIME_OUTPUT_DIRECTORY ${g2o_SOURCE_DIR}/bin CACHE PATH "Target for the binaries")
 if(WIN32)
   set(g2o_LIBRARY_OUTPUT_DIRECTORY ${g2o_SOURCE_DIR}/bin CACHE PATH "Target for the libraries")
@@ -70,6 +71,7 @@ endif(WIN32)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${g2o_LIBRARY_OUTPUT_DIRECTORY})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${g2o_LIBRARY_OUTPUT_DIRECTORY})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${g2o_RUNTIME_OUTPUT_DIRECTORY})
+endif (NOT g2o_RUNTIME_OUTPUT_DIRECTORY)
 
 # Set standard installation directories
 set(RUNTIME_DESTINATION ${CMAKE_INSTALL_BINDIR})
