@@ -42,6 +42,10 @@
 #include <wordexp.h>
 #endif
 
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+#endif
+
 namespace g2o {
 
 using namespace std;
@@ -113,6 +117,23 @@ int strPrintf(std::string& str, const char* fmt, ...) {
 
 std::string strExpandFilename(const std::string& filename) {
 #if (defined(UNIX) || defined(CYGWIN)) && !defined(ANDROID)
+
+#ifdef __APPLE__
+#if TARGET_OS_IPHONE
+  string result = filename;
+  return result;
+#else
+  string result = filename;
+  wordexp_t p;
+  
+  wordexp(filename.c_str(), &p, 0);
+  if (p.we_wordc > 0) {
+    result = p.we_wordv[0];
+  }
+  wordfree(&p);
+  return result;
+#endif
+#else
   string result = filename;
   wordexp_t p;
 
@@ -122,6 +143,7 @@ std::string strExpandFilename(const std::string& filename) {
   }
   wordfree(&p);
   return result;
+  #endif
 #else
   (void)filename;
   std::cerr << "WARNING: " << __PRETTY_FUNCTION__ << " not implemented"

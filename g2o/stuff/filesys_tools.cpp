@@ -53,6 +53,7 @@
 #ifdef __APPLE__
 //#include <chrono>
 //#include <thread>
+#include "TargetConditionals.h"
 #endif
 
 using namespace ::std;
@@ -132,24 +133,40 @@ std::vector<std::string> getFilesByPattern(const char* pattern) {
 
 #elif (defined(UNIX) || defined(CYGWIN)) && !defined(ANDROID)
 
-  wordexp_t p;
+#ifdef __APPLE__
+
+#if TARGET_OS_IPHONE  
+#else
+wordexp_t p;
   wordexp(pattern, &p, 0);
 
   // For some reason, wordexp sometimes fails on an APPLE machine to
   // return anything; therefore, run it several times until we do find
   // something - or give up
-#ifdef __APPLE__
   for (int k = 0; (k < 100) && (p.we_wordc == 0); k++) {
     // chrono::milliseconds duration(20);
     // this_thread::sleep_for(duration);
     wordexp(pattern, &p, WRDE_APPEND);
   }
-#endif
 
   result.reserve(p.we_wordc);
   for (size_t i = 0; i < p.we_wordc; ++i) result.push_back(p.we_wordv[i]);
 
   wordfree(&p);
+
+#endif
+#else
+
+  wordexp_t p;
+  wordexp(pattern, &p, 0);
+
+  result.reserve(p.we_wordc);
+  for (size_t i = 0; i < p.we_wordc; ++i) result.push_back(p.we_wordv[i]);
+
+  wordfree(&p);
+
+
+#endif
 
 #endif
 
